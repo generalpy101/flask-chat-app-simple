@@ -27,7 +27,7 @@ args = parser.parse_args()
 path = str(args.path)
 threshold = float(args.threshold)
 
-logging.info('PyLint Starting | '
+logging.info(' PyLint Starting | '
              'Path: {} | '
              'Threshold: {} '.format(path, threshold))
 
@@ -37,7 +37,7 @@ final_score = results.linter.stats.global_note
 
 if final_score < threshold:
 
-    message = ('PyLint Failed | '
+    message = (' PyLint Failed | '
                'Score: {} | '
                'Threshold: {} '.format(final_score, threshold))
 
@@ -45,7 +45,7 @@ if final_score < threshold:
     raise Exception(message)
 
 else:
-    message = ('PyLint Passed | '
+    message = (' PyLint Passed | '
                'Score: {} | '
                'Threshold: {} '.format(final_score, threshold))
 
