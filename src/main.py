@@ -127,4 +127,4 @@ def on_message(data):
 
 
 if __name__ == "__main__":
-    socketio.run(app, "0.0.0.0", 5000, debug=True)
+    socketio.run(app, "0.0.0.0", 5000, debug=True, allow_unsafe_werkzeug=True)
