@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="shadow-md rounded w-full max-w-xs">
+    <h2 class="font-semibold text-3xl"> Chat Room: {{room}}</h2>
+    <div class="">
+        <div class="messages overflow-y-auto h-32 bg-gray-200" id="messages"></div>
+        <div class="inputs">
+            <input type="text" name="message" id="message" placeholder="Message" rows="3">
+            <button type="button" class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded"
+                onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static',filename='js/room.js') }}"></script>
+{%for msg in messages%}
+<script>
+    createMessage("{{msg.username}}", "{{msg.message}}")
+</script>
+{%endfor%}
+{% endblock content %}
