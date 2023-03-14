@@ -23,6 +23,7 @@ cucumber-report.json
 **/.venv*/
 port.txt
 precommit.hook
+.vscode/**
 pythonFiles/lib/**
 debug_coverage*/**
 languageServer/**
