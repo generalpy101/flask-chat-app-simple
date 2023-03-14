@@ -1,3 +1,6 @@
+import random
+from string import ascii_uppercase
+
 from flask import (
     Flask,
     request,
@@ -13,11 +16,10 @@ from flask_socketio import (
     join_room,
     leave_room
 )
-import random
-from string import ascii_uppercase
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "sfasfasf"
+CORS(app)
 socketio = SocketIO(app)
 
 rooms = {}
@@ -42,27 +44,39 @@ def root():
         create = request.form.get("create", False)
 
         if not username:
-            return render_template("index.html", error="Please enter a name", code=code, username=username)
+            return render_template(
+                "index.html",
+                error="Please enter a name",
+                code=code, username=username
+            )
 
-        if join != False and not code:
-            return render_template("index.html", error="Please enter a room code", code=code, username=username)
+        if join is not False and not code:
+            return render_template(
+                "index.html",
+                error="Please enter a room code",
+                code=code, username=username
+            )
 
         room = code
-        if create != False:
+        if create is not False:
             room = generate_unique_code(4)
             rooms[room] = {"members": 0, "messages": []}
         elif code not in rooms:
-            return render_template("index.html", error="Room does not exist", code=code, username=username)
+            return render_template(
+                "index.html",
+                error="Room does not exist",
+                code=code, username=username
+            )
 
         session["room"] = room
         session["username"] = username
-        return redirect(url_for("room"))
+        return redirect(url_for("chat_room"))
 
     return render_template("index.html")
 
 
 @app.route("/room")
-def room():
+def chat_room():
     room = session.get("room")
     # Prevent unauthorised access
     if room is None or session.get("username") is None or room not in rooms:
@@ -72,6 +86,7 @@ def room():
 
 @socketio.on("connect")
 def on_connect(auth):
+    # pylint: disable=unused-argument
     room = session.get("room")
     username = session.get("username")
 
