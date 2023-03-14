@@ -1,21 +1,9 @@
 import random
 from string import ascii_uppercase
 
-from flask import (
-    Flask,
-    request,
-    session,
-    render_template,
-    redirect,
-    url_for
-)
+from flask import Flask, request, session, render_template, redirect, url_for
 from flask_cors import CORS
-from flask_socketio import (
-    SocketIO,
-    send,
-    join_room,
-    leave_room
-)
+from flask_socketio import SocketIO, send, join_room, leave_room
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "sfasfasf"
@@ -45,16 +33,15 @@ def root():
 
         if not username:
             return render_template(
-                "index.html",
-                error="Please enter a name",
-                code=code, username=username
+                "index.html", error="Please enter a name", code=code, username=username
             )
 
         if join is not False and not code:
             return render_template(
                 "index.html",
                 error="Please enter a room code",
-                code=code, username=username
+                code=code,
+                username=username,
             )
 
         room = code
@@ -63,9 +50,7 @@ def root():
             rooms[room] = {"members": 0, "messages": []}
         elif code not in rooms:
             return render_template(
-                "index.html",
-                error="Room does not exist",
-                code=code, username=username
+                "index.html", error="Room does not exist", code=code, username=username
             )
 
         session["room"] = room
@@ -98,10 +83,13 @@ def on_connect(auth):
         return
 
     join_room(room)
-    send({
-        "username": "username",
-        "message": "has entered the room",
-    }, to=room)
+    send(
+        {
+            "username": "username",
+            "message": "has entered the room",
+        },
+        to=room,
+    )
     rooms[room]["members"] += 1
     print(f"{username} joined the room {room}")
 
@@ -114,14 +102,17 @@ def on_disconnect():
     leave_room(room)
 
     if room in rooms:
-        rooms[room]['members'] -= 1
-        if rooms[room]['members'] <= 0:
+        rooms[room]["members"] -= 1
+        if rooms[room]["members"] <= 0:
             del rooms[room]
 
-    send({
-        "username": username,
-        "message": "has left the room",
-    }, to=room)
+    send(
+        {
+            "username": username,
+            "message": "has left the room",
+        },
+        to=room,
+    )
 
 
 @socketio.on("message")
@@ -129,10 +120,7 @@ def on_message(data):
     room = session.get("room")
     if room not in rooms:
         return
-    content = {
-        "username": session.get("username"),
-        "message": data["data"]
-    }
+    content = {"username": session.get("username"), "message": data["data"]}
     send(content, to=room)
     rooms[room]["messages"].append(content)
     print(content)
@@ -140,4 +128,3 @@ def on_message(data):
 
 if __name__ == "__main__":
     socketio.run(app, "0.0.0.0", 5000, debug=True)
-    
